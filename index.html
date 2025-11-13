@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Online Shop</title>
+    <style>
+        :root {
+            --primary: #6c2eb7;
+            --secondary: #ff9800;
+            --white: #fff;
+            --gray: #f5f5f5;
+            --dark: #222;
+            --purple: #6c2eb7;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Montserrat', Arial, sans-serif; background: var(--gray); color: var(--dark); }
+        header { background: var(--primary); color: var(--white); padding: 0.5rem 0; }
+        .top-bar { display:flex; align-items:center; justify-content:space-between; max-width:1200px; margin:auto; padding:0 1rem; gap:1rem; }
+        .logo { font-weight:bold; font-size:1.5rem; display:flex; align-items:center; }
+        .logo:before { content:"🛒"; margin-right:0.5rem; }
+        .search-bar { flex:1; margin:0 1rem; display:flex; }
+        .search-bar input { width:100%; padding:0.5rem; border:none; border-radius:3px 0 0 3px; }
+        .search-bar button { padding:0.5rem 1rem; border:none; background:var(--secondary); color:var(--white); border-radius:0 3px 3px 0; cursor:pointer; }
+        .user-actions { display:flex; align-items:center; gap:1rem; }
+        nav { background:var(--white); box-shadow:0 2px 4px rgba(0,0,0,0.03); }
+        .nav-menu { display:flex; justify-content:center; gap:2rem; padding:0.5rem 0; font-size:1rem; flex-wrap:wrap; }
+        .nav-menu a { color:var(--dark); text-decoration:none; font-weight:500; transition:color .2s; }
+        .nav-menu a:hover { color:var(--primary); }
+
+        .hero { background:var(--secondary); color:var(--white); padding:2rem 0 0 0; position:relative; }
+        .hero-content { max-width:1200px; margin:auto; display:grid; grid-template-columns:1fr 1fr; align-items:center; gap:2rem; padding:2rem 1rem; }
+        .hero-text { font-size:2rem; font-weight:bold; }
+        .hero-offer { margin-top:1rem; background:var(--primary); color:var(--white); padding:.5rem 1rem; border-radius:20px; font-size:1rem; font-weight:700; cursor:pointer; border:none; }
+        .hero-img img { max-width:250px; width:100%; }
+
+        .categories { background:var(--white); margin:2rem auto; max-width:1200px; border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.04); padding:2rem 1rem; }
+        .categories-title { text-align:center; font-size:1.5rem; font-weight:700; margin-bottom:2rem; }
+        .categories-list { display:grid; grid-template-columns:repeat(4,1fr); gap:2rem; justify-items:center; }
+        .category-item { background:var(--gray); border-radius:10px; padding:1rem; text-align:center; width:120px; box-shadow:0 1px 4px rgba(0,0,0,0.03); transition:box-shadow .2s; }
+        .category-item:hover { box-shadow:0 4px 12px rgba(0,0,0,0.08); }
+
+        .section-title { text-align:center; font-size:1.3rem; font-weight:700; margin:2rem 0 1rem 0; }
+        .products-list { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:2rem; max-width:1400px; margin:auto; padding:1rem; }
+        .product-card { background:var(--white); border-radius:10px; box-shadow:0 2px 8px rgba(0,0,0,0.04); padding:1rem; display:flex; flex-direction:column; align-items:center; text-align:center; position:relative; }
+        .product-card img { max-width:100px; margin-bottom:1rem; }
+        .product-card .offer { position:relative; top:10px; right:10px; background:var(--primary); color:var(--white); font-size:.8rem; padding:2px 8px; border-radius:10px; }
+        .product-card .brand { position:absolute; top:10px; left:10px; background:#eee; color:var(--dark); font-size:.8rem; padding:2px 8px; border-radius:10px; }
+        .product-card .price { font-weight:bold; color:var(--secondary); margin:.5rem 0; }
+        .product-card .old-price { text-decoration:line-through; color:#888; font-size:.9rem; }
+        .product-card .stars { color:#FFD700; font-size:1rem; margin-bottom:.5rem; }
+        .product-card button { background:var(--primary); color:var(--white); border:none; padding:.5rem 1rem; border-radius:20px; font-weight:700; cursor:pointer; margin-top:.5rem; }
+
+        /* PROMO BANNER: ahora solo muestra la imagen y ocupa todo el recuadro.
+           La imagen cubre el contenedor (object-fit:cover) y el contenedor tiene overflow:hidden
+           para respetar bordes redondeados. */
+        .promo-banner {
+            margin: 2rem auto;
+            max-width: 1200px;
+            border-radius: 10px;
+            overflow: hidden; /* importante para que la imagen no sobresalga de los bordes redondeados */
+            display: block;
+            background: var(--purple); /* fallback color mientras carga la imagen */
+            min-height: 220px; /* altura mínima en desktop */
+        }
+        .promo-banner .promo-img-wrap {
+            width: 100%;
+            height: 100%;
+            display: block;
+            position: relative;
+            min-height: 220px;
+        }
+        .promo-banner .promo-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* la imagen cubre su contenedor sin distorsionarse */
+            display: block;
+        }
+
+        .features { display:flex; gap:1rem; max-width:1200px; margin:2rem auto; padding:3rem 1rem; justify-content:space-evenly; flex-wrap:wrap; }
+        .feature-item { background:var(--purple); color:var(--white); border-radius:10px; text-align:center; padding:1rem; font-size:1rem; font-weight:500; flex:1 1 200px; min-width:180px; }
+
+        footer { background:var(--primary); color:var(--white); padding:2rem 0 1rem 0; font-size:.95rem; }
+        .footer-content { max-width:1200px; margin:auto; display:grid; grid-template-columns:repeat(5,1fr); gap:2rem; padding:1rem 1rem 0 1rem; }
+        .footer-section h4 { font-size:1rem; font-weight:bold; margin-bottom:.5rem; }
+        .footer-section ul { list-style:none; }
+        .footer-section ul li { margin-bottom:.3rem; }
+        .footer-section a { color:var(--white); text-decoration:none; }
+        .footer-bottom { text-align:center; margin-top:1rem; font-size:.9rem; padding:0 1rem 1rem 1rem; }
+
+        /* Responsividad */
+        @media (max-width: 992px) {
+            .hero-content { grid-template-columns:1fr; text-align:center; }
+            .promo-banner { min-height:200px; }
+            .promo-banner .promo-img-wrap { min-height:160px; }
+            .footer-content { grid-template-columns:repeat(2,1fr); }
+        }
+        @media (max-width: 768px) {
+            .top-bar { flex-direction:column; align-items:stretch; }
+            .search-bar { margin:.5rem 0; order:2; }
+            .categories-list { grid-template-columns:repeat(2,1fr); }
+            .products-list { grid-template-columns:repeat(2,1fr); gap:1rem; }
+            .promo-banner { min-height:180px; }
+            .promo-banner .promo-img-wrap { min-height:140px; }
+            .footer-content { grid-template-columns:1fr; }
+        }
+        @media (max-width: 480px) {
+            .logo { font-size:1.25rem; }
+            .product-card img { max-width:80px; }
+            .products-list { grid-template-columns:1fr; }
+            .categories-list { grid-template-columns:repeat(2,1fr); gap:1rem; }
+            .promo-banner { min-height:140px; }
+            .promo-banner .promo-img-wrap { min-height:120px; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="top-bar">
+            <div class="logo">Online Shop</div>
+            <form class="search-bar">
+                <input type="text" placeholder="¿Qué vas a buscar?">
+                <button type="submit">Buscar</button>
+            </form>
+            <div class="user-actions">
+                <a href="#" style="color:var(--white);">Entrar o registrarse</a>
+                <a href="#" style="color:var(--white);">🛒</a>
+            </div>
+        </div>
+    </header>
+
+    <nav>
+        <div class="nav-menu">
+            <a href="#">HOME</a>
+            <a href="#">LOJA</a>
+            <a href="#">SOBRE</a>
+            <a href="#">BLOG</a>
+            <a href="#">AIRDOTS</a>
+            <a href="#">APPLE WATCH</a>
+            <a href="#">CAPINHAS</a>
+            <a href="#">FONES DE OUVIDO</a>
+            <a href="#">SMART WATCH</a>
+            <a href="#">CONTATO</a>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-content">
+            <div>
+                <div class="hero-text">
+                    <span style="background:var(--primary);padding:0.2rem 0.7rem;border-radius:15px;font-size:1rem;">SMARTWATCH</span><br>
+                    Aproveite a vida<br>em movimiento
+                </div>
+                <button class="hero-offer">PEGAR OFERTA</button>
+            </div>
+            <div class="hero-img">
+                <img src="./smart whac.png" alt="Smartwatch" />
+            </div>
+        </div>
+    </section>
+
+    <section class="categories">
+        <div class="categories-title">Categorias</div>
+        <div class="categories-list">
+            <div class="category-item">
+                <img src="./logo audifonos.png" alt="Airdots">
+                <span>Airdots</span>
+            </div>
+            <div class="category-item">
+                <img src="logo cascos.png" alt="Fone de Ouvido">
+                <span>Fone de Ouvido</span>
+            </div>
+            <div class="category-item">
+                <img src="logo relog.png" alt="Smart Watch" style="width:50px;height:50px;">
+                <span>Smart Watch</span>
+            </div>
+            <div class="category-item">
+                <img src="logo smartwahct.png" alt="Apple Watch" style="width:50px;height:50px;">
+                <span>Apple Watch</span>
+            </div>
+        </div>
+    </section>
+
+    <div class="section-title">Lançamentos</div>
+    <section class="products-list">
+        <div class="product-card">
+            <span class="offer">Oferta</span>
+            <img src="./aiportsa.jpg" alt="Mini Air Dots">
+            <div>Mini Air Dots semi fio colorido</div>
+            <div class="old-price">R$150,00</div>
+            <div class="price">R$100,00</div>
+            <div class="stars">★★★★★ (9)</div>
+            <button>Ver opções</button>
+        </div>
+        <div class="product-card">
+            <span class="brand">mi</span>
+            <span class="offer">Oferta</span>
+            <img src="./audi.jpg" alt="Xiaomi Redmi Airdots">
+            <div>Xiaomi Redmi Airdots 2 Airdots 2 Fone Bluetooth</div>
+            <div class="old-price">R$200,00</div>
+            <div class="price">R$150,00</div>
+            <div class="stars">★★★★★ (1)</div>
+            <button>Ver opções</button>
+        </div>
+        <div class="product-card">
+            <img src="./plus.jpg" alt="Apple Watch">
+            <div>Series 5 5S LTE Original 95% New Apple Watch Series 5 S5 Lite Aluminum Sportband</div>
+            <div class="old-price">R$649,41</div>
+            <div class="price">R$539,82</div>
+            <button>Ver opções</button>
+        </div>
+        <div class="product-card">
+            <span class="offer">Oferta</span>
+            <img src="./sqr.jpg" alt="SQR P18">
+            <div>SQR P18 Smart Watch Feminino 1.6 inch 2021 Full Touch</div>
+            <div class="old-price">R$350,00</div>
+            <div class="price">R$250,00</div>
+            <div class="stars">★★★★★ (1)</div>
+            <button>Ver opções</button>
+        </div>
+    </section>
+
+    <!-- Promo banner: solo imagen en el recuadro -->
+    <section class="promo-banner" aria-label="Banner promocional">
+        <div class="promo-img-wrap">
+            <!-- Recomendación: renombrar el archivo sin espacios (ej. promo-grande.jpg) -->
+            <img class="promo-img" src="./promo grande.jpg" alt="Banner promocional">
+        </div>
+    </section>
+
+    <div class="section-title">Produtos em Oferta</div>
+    <section class="products-list">
+        <div class="product-card">
+            <span class="offer">Oferta</span>
+            <img src="./aiportsa.jpg" alt="Mini Air Dots">
+            <div>Mini Air Dots semi fio colorido</div>
+            <div class="old-price">R$150,00</div>
+            <div class="price">R$100,00</div>
+            <div class="stars">★★★★★ (9)</div>
+            <button>Ver opções</button>
+        </div>
+        <div class="product-card">
+            <span class="brand">mi</span>
+            <span class="offer">Oferta</span>
+            <img src="./audi.jpg" alt="Xiaomi Redmi Airdots">
+            <div>Xiaomi Redmi Airdots 2 Airdots 2 Fone Bluetooth</div>
+            <div class="old-price">R$200,00</div>
+            <div class="price">R$150,00</div>
+            <div class="stars">★★★★★ (1)</div>
+            <button>Ver opções</button>
+        </div>
+        <div class="product-card">
+            <span class="offer">Oferta</span>
+            <img src="./sqr.jpg" alt="SQR P18">
+            <div>SQR P18 Smart Watch Feminino 1.6 inch 2021 Full Touch</div>
+            <div class="old-price">R$350,00</div>
+            <div class="price">R$250,00</div>
+            <div class="stars">★★★★★ (1)</div>
+            <button>Ver opções</button>
+        </div>
+        <div class="product-card">
+            <span class="offer">Oferta</span>
+            <img src="relog 1.jpg" alt="Colmi">
+            <div>Smartwatch para telefone Xiaomi Full Touch Fitness Tracker</div>
+            <div class="old-price">R$390,00</div>
+            <div class="price">R$310,00</div>
+            <button>Ver opções</button>
+        </div>
+    </section>
+
+    <section class="features">
+        <div class="feature-item">
+            <img src="./car.png" alt="Frete Grátis" style="width:50px;height:50px;">
+            <br>
+            <span>Frete grátis<br>Para todo o Brasil </span>
+        </div>
+        <div class="feature-item">
+            <img src="targe.png" alt="Parcele sua compra" style="width:50px;height:50px;">
+            <br>
+            Parcele sua compra<br>Em até 12x
+        </div>
+        <div class="feature-item">
+            <img src="seguridad.png" alt="Compra Segura" style="width:50px;height:50px;">
+            <br>
+            Compra segura<br>Seus dados protegidos
+        </div>
+        <div class="feature-item">
+            <img src="pedido.png" alt="Rastreamento de Pedido" style="width:50px;height:50px;">
+            <br>
+            Pedido monitorado<br>Código de rastreamento
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h4>Atendimento</h4>
+                <ul>
+                    <li>Horário de funcionamento<br>Segunda a sexta: 8:00 às 20:00h</li>
+                    <li>(34) 9 3333-3333</li>
+                    <li>(34) 9 3333-3333</li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Institucional</h4>
+                <ul>
+                    <li><a href="#">Home</a></li>
+                    <li><a href="#">Quem somos</a></li>
+                    <li><a href="#">Garantia</a></li>
+                    <li><a href="#">Produtos</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Ajuda</h4>
+                <ul>
+                    <li><a href="#">Políticas de devolução e trocas</a></li>
+                    <li><a href="#">Políticas de privacidade</a></li>
+                    <li><a href="#">Fale Conosco</a></li>
+                    <li><a href="#">Entregas e Prazos</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Meus Pedidos</h4>
+                <ul>
+                    <li><a href="#">Acompanhe seus pedidos</a></li>
+                    <li><a href="#">Editar cadastro</a></li>
+                </ul>
+                <div style="margin-top:1rem;">
+                    <h4>Formas de Pagamento:</h4>
+                    <img src="" alt="Mercado Pago" style="max-width:100px;">
+                </div>
+            </div>
+            <div class="footer-section">
+                <h4>Nos Acompanhe</h4>
+                <div class="footer-social">
+                    <a href="#" style="background:var(--white);color:var(--primary);border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;text-decoration:none;">f</a>
+                    <a href="#" style="background:var(--white);color:var(--primary);border-radius:50%;width:28px;height:28px;display:flex;align-items:center;justify-content:center;text-decoration:none;">ig</a>
+                </div>
+                <div style="margin-top:1rem;">
+                    <h4>Site Blindado:</h4>
+                    <img src="" alt="SSL" style="max-width:60px;">
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            Online Shop Ltda.<br>
+            Endereço: Av. Paulo Gracindo, 15 – Morada da Colina, Uberlândia – MG, 38411-145<br>
+            CNPJ: 00.000.000/0000-00<br>
+            © 2021 Online Shop - Todos os direitos reservados.
+        </div>
+    </footer>
+</body>
+</html>
